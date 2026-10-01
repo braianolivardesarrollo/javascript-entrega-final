@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-commerce</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/main.js" defer></script>
+  </head>
+
+  <body> 
+    <header>
+      <h1 id="titulo">Mi comercio online</h1>
+
+      <nav>
+        <ul>
+          <li><a href="#" class="link">Inicio</a></li>
+          <li><a href="#productos" class="link">Productos</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <h2>Productos</h2>
+      <form id="formulario">
+        <input type="text" placeholder="Buscar..." />
+        <input type="submit" value="Buscar" />
+      </form>
+      
+      <section id="productos" class="productos"></section>
+
+    <section>
+      <h3>Agregar producto</h3>
+      <form id="form-agregar-producto" class="form-agregar-producto">
+        <input 
+        type="text" 
+        name="nombre"
+        placeholder="nombre del producto" 
+        id="input-nombre"
+        />
+        <input 
+        type="number" 
+        name="precio"
+        placeholder="precio del producto" 
+        id="input-precio"
+        />
+        <input 
+        type="text" 
+        name="imagen"
+        placeholder="URL de la imagen del producto" 
+        id="input-imagen"
+        />
+        <input 
+        type="text" 
+        name="descripcion"
+        placeholder="descripcion del producto" 
+        id="input-descripcion"
+        />
+        <input type="submit" value="Agregar producto"/>  
+      </form>
+    </section>
+      <div id="mensaje-carrito"></div>
+      <section id="carrito"></section>
+    </main>
+    <footer>
+    
+    </footer>
+  </body>
+</html>
