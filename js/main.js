@@ -2,9 +2,9 @@ let productos = [];
 
 // Carga los productos desde el archivo JSON
 async function cargarProductos() {
-  const productosDOM = document.getElementById("productos");
+  const estadoCarga = document.getElementById("estado-carga");
 
-  productosDOM.textContent = "Cargando productos...";
+  estadoCarga.textContent = "Cargando productos...";
 
   try {
     const respuesta = await fetch("./data/productos.json");
@@ -16,7 +16,7 @@ async function cargarProductos() {
     const productosIniciales = await respuesta.json();
 
     productos =
-      JSON.parse(localStorage.getItem("productos")) ?? productosIniciales;
+      JSON.parse(localStorage.getItem("productos")) || productosIniciales;
 
     imprimirElementosEnHTML(productos);
 
@@ -26,18 +26,15 @@ async function cargarProductos() {
       icon: "success",
     });
   } catch (error) {
-    console.error("Error al cargar los productos:", error);
-
     Swal.fire({
       title: "Error",
       text: "No se pudieron cargar los productos.",
       icon: "error",
     });
   } finally {
-    console.log("Finalizó la carga de productos");
+    estadoCarga.textContent = "";
   }
 }
-
 
 // Obtiene el carrito guardado en localStorage
 function obtenerCarritoDelStorage() {
@@ -109,21 +106,20 @@ function imprimirElementosEnHTML(listaProductos) {
   }
 }
 
+
 function agregarProductoAlCarrito(producto) {
   carrito.push(producto);
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
 
-  const mensajeCarrito = document.getElementById("mensaje-carrito");
-
-  mensajeCarrito.textContent = `Agregaste ${producto.nombre} al carrito`;
-
-  setTimeout(() => {
-    mensajeCarrito.textContent = "";
-  }, 2000);
+  Toastify({
+    text: `${producto.nombre} agregado al carrito`,
+    duration: 2000,
+  }).showToast();
 
   imprimirCarritoEnHTML();
 }
+
 
 function imprimirCarritoEnHTML() {
   const contenedorCarrito = document.getElementById("carrito");
