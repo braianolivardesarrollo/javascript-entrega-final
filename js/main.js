@@ -182,23 +182,42 @@ function imprimirCarritoEnHTML() {
 
   contenedorCarrito.appendChild(botonComprarCarrito);
 
-  botonComprarCarrito.addEventListener("click", () => {
-    carrito.length = 0;
+  
+botonComprarCarrito.addEventListener("click", async () => {
+  if (carrito.length === 0) {
+    Swal.fire({
+      title: "Carrito vacío",
+      text: "Agregá productos antes de realizar la compra.",
+      icon: "warning",
+    });
+
+    return;
+  }
+
+  const resultado = await Swal.fire({
+    title: "Confirmar compra",
+    text: `¿Confirmás tu compra por $${total}?`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, comprar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (resultado.isConfirmed) {
+    carrito = [];
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
     imprimirCarritoEnHTML();
 
-    const mensajeCompra = document.createElement("p");
+    Swal.fire({
+      title: "¡Compra realizada!",
+      text: `Tu compra por $${total} se realizó correctamente.`,
+      icon: "success",
+    });
+  }
+});
 
-    mensajeCompra.textContent = "Compra realizada correctamente";
-
-    contenedorCarrito.appendChild(mensajeCompra);
-
-    setTimeout(() => {
-      mensajeCompra.textContent = "";
-    }, 2000);
-  });
 }
 
 imprimirCarritoEnHTML();
@@ -237,6 +256,16 @@ function obtenerProductoDelForm() {
     const inputImagen = document.getElementById("input-imagen").value;
     const inputDescripcion =
       document.getElementById("input-descripcion").value;
+
+      if (!inputNombre.trim() || !inputPrecio || Number(inputPrecio) <= 0) {
+  Swal.fire({
+    title: "Datos incompletos",
+    text: "Ingresá el nombre del producto y un precio mayor que cero.",
+    icon: "warning",
+  });
+
+  return;
+}
 
     productos.push({
       id: productos.length + 1,
