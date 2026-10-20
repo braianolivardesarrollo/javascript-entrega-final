@@ -44,7 +44,7 @@
   {
     "id": 7,
     "nombre": "Multimetro",
-    "descripcion": "multimetro digital Mod.117, Fluke",
+    "descripcion": "multimetro digital Mod.117,    Fluke",
     "precio": 5000,
     "imagen": "./img/multimetroDigital.webp"
   },
