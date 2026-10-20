@@ -74,8 +74,9 @@ function imprimirElementosEnHTML(listaProductos) {
       <h3>${nombre}</h3>
       <p>${descripcion}</p>
       <p>$${precio}</p>
-      <button class="card-boton" id="comprar${id}">Comprar</button>
-      <button class="card-boton" id="eliminar${id}">Eliminar</button>
+      <button class="card-boton" id="comprar${id}">
+  Agregar al carrito
+</button> 
     `;
 
     productosDOM.appendChild(card);
@@ -85,30 +86,24 @@ function imprimirElementosEnHTML(listaProductos) {
     btnComprar.addEventListener("click", () => {
       agregarProductoAlCarrito(producto);
     });
-
-    const btnEliminar = document.getElementById(`eliminar${id}`);
-
-    btnEliminar.addEventListener("click", () => {
-      productos.splice(productos.indexOf(producto), 1);
-
-      guardarProductos();
-
-      imprimirElementosEnHTML(productos);
-
-      const mensajeCarrito = document.getElementById("mensaje-carrito");
-
-      mensajeCarrito.textContent = `Producto "${producto.nombre}" eliminado correctamente`;
-
-      setTimeout(() => {
-        mensajeCarrito.textContent = "";
-      }, 2000);
-    });
   }
 }
 
 
+
 function agregarProductoAlCarrito(producto) {
-  carrito.push(producto);
+  const productoEnCarrito = carrito.find(
+    (elemento) => elemento.id === producto.id
+  );
+
+  if (productoEnCarrito) {
+    productoEnCarrito.cantidad++;
+  } else {
+    carrito.push({
+      ...producto,
+      cantidad: 1,
+    });
+  }
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
 
@@ -119,6 +114,7 @@ function agregarProductoAlCarrito(producto) {
 
   imprimirCarritoEnHTML();
 }
+
 
 
 function imprimirCarritoEnHTML() {
@@ -136,89 +132,128 @@ function imprimirCarritoEnHTML() {
       : "Productos en tu carrito";
 
   carrito.forEach((producto, indice) => {
+    const cantidad = producto.cantidad || 1;
+    const subtotal = Number(producto.precio) * cantidad;
+
+    total += subtotal;
+
     ul.innerHTML += `
       <li>
         ${producto.nombre}: $${producto.precio}
-        <button class="boton-eliminar-carrito" id="eliminar-carrito${indice}">
+        <br>
+        Cantidad: ${cantidad}
+        <button class="boton-restar" data-indice="${indice}">−</button>
+        <button class="boton-sumar" data-indice="${indice}">+</button>
+        <br>
+        Subtotal: $${subtotal}
+        <button class="boton-eliminar-carrito" data-indice="${indice}">
           Eliminar
         </button>
       </li>
     `;
-
-    total += Number(producto.precio);
   });
 
   contenedorCarrito.appendChild(ul);
 
-  const botonesEliminar = document.querySelectorAll(
-    ".boton-eliminar-carrito",
-  );
-
-  botonesEliminar.forEach((boton, indice) => {
-    boton.addEventListener("click", () => {
-      carrito.splice(indice, 1);
-
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-
-      imprimirCarritoEnHTML();
-    });
-  });
-
   const mensajeCarrito = document.createElement("p");
-
   mensajeCarrito.textContent = mensaje;
-
   contenedorCarrito.appendChild(mensajeCarrito);
 
   const precioTotal = document.createElement("p");
-
   precioTotal.textContent = `Total: $${total}`;
-
   contenedorCarrito.appendChild(precioTotal);
 
-  const botonComprarCarrito = document.createElement("button");
+  // Botón para sumar unidades
+  document.querySelectorAll(".boton-sumar").forEach((boton) => {
+    boton.addEventListener("click", () => {
+      const indice = Number(boton.dataset.indice);
 
-  botonComprarCarrito.textContent = "Comprar carrito";
+      carrito[indice].cantidad = (carrito[indice].cantidad || 1) + 1;
 
-  contenedorCarrito.appendChild(botonComprarCarrito);
-
-  
-botonComprarCarrito.addEventListener("click", async () => {
-  if (carrito.length === 0) {
-    Swal.fire({
-      title: "Carrito vacío",
-      text: "Agregá productos antes de realizar la compra.",
-      icon: "warning",
+      guardarCarrito();
     });
-
-    return;
-  }
-
-  const resultado = await Swal.fire({
-    title: "Confirmar compra",
-    text: `¿Confirmás tu compra por $${total}?`,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Sí, comprar",
-    cancelButtonText: "Cancelar",
   });
 
-  if (resultado.isConfirmed) {
-    carrito = [];
+  // Botón para restar unidades
+  document.querySelectorAll(".boton-restar").forEach((boton) => {
+    boton.addEventListener("click", () => {
+      const indice = Number(boton.dataset.indice);
 
-    localStorage.setItem("carrito", JSON.stringify(carrito));
+      carrito[indice].cantidad = (carrito[indice].cantidad || 1) - 1;
 
-    imprimirCarritoEnHTML();
+      if (carrito[indice].cantidad <= 0) {
+        carrito.splice(indice, 1);
+      }
 
-    Swal.fire({
-      title: "¡Compra realizada!",
-      text: `Tu compra por $${total} se realizó correctamente.`,
-      icon: "success",
+      guardarCarrito();
     });
-  }
-});
+  });
 
+  // Eliminar un producto del carrito
+  document.querySelectorAll(".boton-eliminar-carrito").forEach((boton) => {
+    boton.addEventListener("click", () => {
+      const indice = Number(boton.dataset.indice);
+
+      carrito.splice(indice, 1);
+
+      guardarCarrito();
+    });
+  });
+
+  // Botón para vaciar todo el carrito
+  const botonVaciar = document.createElement("button");
+  botonVaciar.textContent = "Vaciar carrito";
+  contenedorCarrito.appendChild(botonVaciar);
+
+  botonVaciar.addEventListener("click", () => {
+    carrito = [];
+    guardarCarrito();
+  });
+
+  // Botón para finalizar la compra
+  const botonComprarCarrito = document.createElement("button");
+  botonComprarCarrito.textContent = "Finalizar compra";
+  contenedorCarrito.appendChild(botonComprarCarrito);
+
+  botonComprarCarrito.addEventListener("click", async () => {
+    if (carrito.length === 0) {
+      Swal.fire({
+        title: "Carrito vacío",
+        text: "Agregá productos antes de realizar la compra.",
+        icon: "warning",
+      });
+
+      return;
+    }
+
+    const resultado = await Swal.fire({
+      title: "Confirmar compra",
+      text: `¿Confirmás tu compra por $${total}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí, comprar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (resultado.isConfirmed) {
+      carrito = [];
+      guardarCarrito();
+
+      Swal.fire({
+        title: "¡Compra realizada!",
+        text: `Tu compra por $${total} se realizó correctamente.`,
+        icon: "success",
+      });
+    }
+  });
 }
+
+function guardarCarrito() {
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  imprimirCarritoEnHTML();
+}
+
+
 
 imprimirCarritoEnHTML();
 
