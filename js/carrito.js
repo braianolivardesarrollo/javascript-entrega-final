@@ -174,3 +174,5 @@ function guardarCarrito() {
   localStorage.setItem("carrito", JSON.stringify(carrito));
   imprimirCarritoEnHTML();
 }
+
+imprimirCarritoEnHTML();
