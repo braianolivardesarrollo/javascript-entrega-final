@@ -128,7 +128,7 @@ function obtenerProductoDelForm() {
     productos.push({
       id: productos.length + 1,
       nombre: inputNombre,
-      precio: inputPrecio,
+     precio: Number(inputPrecio),
       imagen: inputImagen,
       descripcion: inputDescripcion,
     });

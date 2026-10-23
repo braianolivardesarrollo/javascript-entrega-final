@@ -29,14 +29,14 @@
   },
   {
     "id": 5,
-    "nombre": "Llaves Allen ",
+    "nombre": "Llaves Allen",
     "descripcion": "juego de llaves allen milimetricas 1mm a 13mm, Bremen",
     "precio": 850,
     "imagen": "./img/llavesAllen.webp"
   },
   {
     "id": 6,
-    "nombre": "Soldador ",
+    "nombre": "Soldador",
     "descripcion": "soldador de estaño 70w, Total",
     "precio": 1200,
     "imagen": "./img/soldador.webp"
@@ -44,7 +44,7 @@
   {
     "id": 7,
     "nombre": "Multimetro",
-    "descripcion": "multimetro digital Mod.117,    Fluke",
+    "descripcion": "multimetro digital Mod.117, Fluke",
     "precio": 5000,
     "imagen": "./img/multimetroDigital.webp"
   },
